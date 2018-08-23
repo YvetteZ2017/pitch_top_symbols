@@ -3,6 +3,10 @@ import sys
 
 class PitchVolume:
     def __init__(self, f_n, top_num):
+        """
+        :param f_n: file name
+        :param top_num: number of top volume that needs to get
+        """
         self.orders = dict()
         self.volume = dict()
         self.file_name = f_n
@@ -37,8 +41,13 @@ class PitchVolume:
         return self.find_top_symbols()
 
     def add_order(self, order_id, shares, stock_symbol, price):
+        """
+        Add newly accepted visible order to self.order, with key=OrderID
+
+        """
         if order_id in self.orders:
-            raise Exception('order_id already exists: ', order_id)
+            raise Exception('While adding new orders, order_id already exists: ', order_id)
+
         self.orders[order_id] = {
             'stock_symbol': stock_symbol,
             'shares': shares,
@@ -46,8 +55,13 @@ class PitchVolume:
         }
 
     def execute_order(self, order_id, shares):
+        """
+        Remove executed shares from added orders (self.order)
+        Add executed shares to volume record (self.volume) with key=Stock_Symbol
+
+        """
         if order_id not in self.orders:
-            raise Exception('Order does not exist: ', order_id)
+            raise Exception('Order does not exist while trying to execute an order: ', order_id)
 
         added_shares = self.orders[order_id]['shares']
         symbol = self.orders[order_id]['stock_symbol']
@@ -64,8 +78,12 @@ class PitchVolume:
             self.volume[symbol] = shares
 
     def cancel_order(self, order_id, shares):
+        """
+        Remove added order from self.order
+
+        """
         if order_id not in self.orders:
-            raise Exception('Order does not exist: ', order_id)
+            raise Exception('Order does not exist while trying to cancel an order: ', order_id)
 
         added_shares = self.orders[order_id]['shares']
         if shares > added_shares:
@@ -77,9 +95,13 @@ class PitchVolume:
             if self.orders[order_id]['shares'] == 0:
                 del self.orders[order_id]
 
-    def trade(self, order_id, shares, stock_symbol, price):
+    def trade(self, order_id, shares, stock_symbol):
+        """
+        Execute non-displayed orders, add shares directly to self.volume
+
+        """
         if order_id in self.orders:
-            raise Exception('order id from trading message already exists in order_records')
+            raise Exception('Order_ID from trading message already exists in order_records')
         else:
             if stock_symbol in self.volume:
                 self.volume[stock_symbol] += shares
@@ -87,6 +109,10 @@ class PitchVolume:
                 self.volume[stock_symbol] = shares
 
     def find_top_symbols(self):
+        """
+        Sort the volume record, find the top 10 frequent stock symbols
+
+        """
         symbols = self.volume
         sorted_list = sorted(symbols.items(), key=lambda x: x[1], reverse=True)[:self.top_number]
         with open('Top_Volumes', 'w+') as f:
