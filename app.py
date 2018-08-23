@@ -5,7 +5,7 @@ class PitchVolume:
     def __init__(self, f_n, top_num):
         """
         :param f_n: file name
-        :param top_num: number of top volume that needs to get
+        :param top_num: number of top symbols needed
         """
         self.orders = dict()
         self.volume = dict()
@@ -95,7 +95,7 @@ class PitchVolume:
             if self.orders[order_id]['shares'] == 0:
                 del self.orders[order_id]
 
-    def trade(self, order_id, shares, stock_symbol):
+    def trade(self, order_id, shares, stock_symbol, price):
         """
         Execute non-displayed orders, add shares directly to self.volume
 
