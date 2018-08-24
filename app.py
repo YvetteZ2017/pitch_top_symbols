@@ -35,8 +35,7 @@ class PitchVolume:
                 elif message_type == 'P':
                     shares = int(line[23:29])
                     stock_symbol = line[29:35]
-                    price = line[35:45]
-                    self.trade(order_id, shares, stock_symbol, price)
+                    self.trade(order_id, shares, stock_symbol)
 
         return self.find_top_symbols()
 
@@ -66,7 +65,7 @@ class PitchVolume:
         added_shares = self.orders[order_id]['shares']
         symbol = self.orders[order_id]['stock_symbol']
         if shares > added_shares:
-            raise Exception('Executed shares more than added: ', order_id)
+            raise Exception('Executed shares larger than added shares: ', order_id)
         if shares == added_shares:
             del self.orders[order_id]
         else:
@@ -87,7 +86,7 @@ class PitchVolume:
 
         added_shares = self.orders[order_id]['shares']
         if shares > added_shares:
-            raise Exception('Cancelled shares more than added: ', order_id)
+            raise Exception('Cancelled shares more than added shares: ', order_id)
         if shares == added_shares:
             del self.orders[order_id]
         else:
@@ -95,7 +94,7 @@ class PitchVolume:
             if self.orders[order_id]['shares'] == 0:
                 del self.orders[order_id]
 
-    def trade(self, order_id, shares, stock_symbol, price):
+    def trade(self, order_id, shares, stock_symbol):
         """
         Execute non-displayed orders, add shares directly to self.volume
 
@@ -110,7 +109,7 @@ class PitchVolume:
 
     def find_top_symbols(self):
         """
-        Sort the volume record, find the top 10 frequent stock symbols
+        Sort the volume record, find the top 10 frequent stock symbols, write to a new file 'Top_Volumes.
 
         """
         symbols = self.volume
